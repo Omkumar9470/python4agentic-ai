@@ -54,3 +54,38 @@ for i in range (3):
         print("Wrong password")
         continue
 '''
+'''
+#Calculator Using Functions
+def add (a,b):
+    return a + b
+
+def subtract(a,b):
+    return a - b
+
+def multiply(a,b):
+    return a*b
+
+def divide(a,b):
+    return a/b
+
+a = int(input("Enter the first number"))
+b= int (input("Enter the second number"))
+print("Select the opertaion Add, Subtract, Multiply, Divide")
+choice = int(input("Choose 1,2,3,4"))
+
+if choice==1:
+    print(add(a,b))
+
+elif choice==2:
+    print(subtract(a,b))
+
+elif choice == 3:
+    print(multiply(a,b))
+
+elif choice == 4:
+    print(divide(a,b))
+
+else:
+    print("Unexpected Error, choose between 1 - 4")
+'''
+

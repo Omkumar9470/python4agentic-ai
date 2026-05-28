@@ -89,3 +89,27 @@ else:
     print("Unexpected Error, choose between 1 - 4")
 '''
 
+'''
+#AI Chatbot Structure
+
+def get_input():
+    user_input = input("What DO You Want To Say: ")
+    return user_input
+
+user_input_final = get_input()
+
+def generate_response(user_input_final):
+    if user_input_final == "Hello":
+        return "Hi, nice to meet you"
+    
+    else:
+        return "Ok I heard you, you said -", user_input_final
+response_final= generate_response(user_input_final)
+
+def display_response(response_final):
+    print(response_final)
+
+display_response(response_final)
+
+'''
+

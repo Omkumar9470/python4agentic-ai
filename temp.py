@@ -113,3 +113,29 @@ display_response(response_final)
 
 '''
 
+'''
+# Temperature Converter
+
+def celsius_to_fahrenheit(temp):
+    return (temp * (9/5)) + 32
+
+def fahrenheit_to_celsius(temp):
+    return (temp-32)*(5/9)
+
+print("What You want to convert choose")
+print("1 for celsius_to_fahrenheit")
+print("2 for fahrenheit_to_celsius")
+choice = int(input(" "))
+temp = float(input("Enter the Tempurature: "))
+
+if choice==1:
+    print(celsius_to_fahrenheit(temp))
+
+elif choice==2:
+    print(fahrenheit_to_celsius(temp))
+
+else:
+    print("Enter a valid response")
+
+'''
+

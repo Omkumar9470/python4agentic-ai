@@ -139,3 +139,25 @@ else:
 
 '''
 
+
+'''
+#Student Database
+
+student_db = {
+    
+}
+
+
+print("Enter Your Name:")
+a = input("---")
+student_db["name"] = a
+print("Enter your Age:")
+b = int(input("---"))
+student_db["age"] = b
+print("Enter Your Marks:")
+c = int(input("---"))
+student_db["marks"] = c
+
+print(student_db)
+'''
+

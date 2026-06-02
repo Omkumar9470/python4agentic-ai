@@ -161,3 +161,50 @@ student_db["marks"] = c
 print(student_db)
 '''
 
+
+'''
+#Contact Book
+
+contact = [
+    {
+        "name": "Om",
+        "number": 123
+    },
+    {
+        "name": "Jay",
+        "number": 142
+    }
+]
+
+while True:
+    print("\n--- Contact Book---")
+    print("1. View all Contacts")
+    print("2. Add New Contact")
+    print("3. Exit")
+
+    choice = int(input("\n---Enter Your Choice--\n"))
+
+    if choice == 1:
+        print("\n Your contacts are.")
+        for person in contact:
+            print(f"Name:", person["name"], "Phone:", person["number"])
+    
+    elif choice == 2:
+        print("\n Add a New Contact \n")
+        new_name = input("Enter Name: ")
+        new_number = int(input("Enter Number: "))
+
+        new_entry = {"name": new_name, "number": new_number}
+
+        contact.append(new_entry)
+        print("Contact added successfully")
+
+    elif choice== 3:
+        print("Exited Successfully")
+        break
+
+    else:
+        print("Enter a valid choice")
+        continue
+
+'''

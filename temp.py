@@ -208,3 +208,54 @@ while True:
         continue
 
 '''
+
+'''
+
+#Skill Manager
+
+skills = []
+
+while True:
+    print("Skill manager \n")
+
+    print("1. Add Skill \n")
+    print("2. Remove Skill \n")
+    print("3. Show Skill \n")
+    print("4. Exit")
+    print("Enter Your Choice (1,2,3,4)")
+    choice = int(input(" "))
+
+    if choice == 1:
+        print("Add Your Skill \n")
+        skill = input(" ")
+
+
+        skills.append(skill)
+        print("Skill added successfully \n")
+    
+    elif choice == 2:
+        print("Enter the skill you want to remove \n")
+        skill = input(" ")
+
+        skills.remove(skill)
+
+        print("Skill Removed Successfully \n")
+    
+    elif choice == 3:
+        print("Your Skills Are---")
+
+        for skill in skills:
+            print(skill)
+
+    elif choice == 4:
+        print("Exiting")
+        break
+
+    else:
+        print("Invalid Choice Retry")
+        continue
+'''
+
+
+
+

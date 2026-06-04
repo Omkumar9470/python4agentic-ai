@@ -256,6 +256,36 @@ while True:
         continue
 '''
 
+#Duplicate Remover
+
+nums = set()
+
+while True:
+    print("Your Favourite number")
+    print("1. Add number")
+    print("2. Show")
+    print("3. Exit")
+
+    choice = int(input("Choose 1,2 or 3 ---"))
+
+    if choice == 1:
+        print("Enter Your Number \n")
+        num = int(input(" "))
+
+        nums.add(num)
+        print("Number added successfully")
+    
+    elif choice == 2:
+        print("Your Numbers Are --")
+        print(nums)
+    
+    elif choice == 3:
+        break
+
+    else:
+        print("Wrong Choice, Enter a Valid Choice")
+        continue
+
 
 
 

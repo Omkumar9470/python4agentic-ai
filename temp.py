@@ -288,6 +288,55 @@ while True:
         continue
 '''
 
+'''
+
+#Student Management
+
+class Student:
+    def __init__(self, name, age, marks):
+        self.name = name
+        self.age = age
+        self.marks = marks
+    
+    def show_details(self):
+        print(f"Student Report -> Name: {self.name} | Age: {self.age} | marks: {self.marks}")
+
+
+student_list = []
+
+while True:
+    print("\n ---Student Management System--- \n")
+    print("\n 1. Add New Student")
+    print("\n 2. Show All Students")
+    print("\n 3. Exit")
+
+    choice = int(input("\n Enter your choice 1,2 or 3 : \n  "))
+
+    if choice == 1:
+        print("\n Enter Details of the New student")
+        name = input("\n Enter Name Of The Student:  ")
+        age = int(input("Enter The Age OF The Student:  "))
+        marks = int(input("Enter The Marks Obtained By The Student:  "))
+
+        new_student = Student(name, age, marks)
+
+        student_list.append(new_student)
+
+        print(f"Student is added successfully for {name}")
+    
+    elif choice == 2:
+        print("Here is the list of the students")
+
+        for student in student_list:
+            student.show_details()
+
+    elif choice == 3:
+        break
+
+    else:
+        print("Invalid choice, Retry")
+        continue
+'''
 
 
 

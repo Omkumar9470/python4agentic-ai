@@ -338,5 +338,62 @@ while True:
         continue
 '''
 
+'''
+# BankAccount
+
+class BankAccount:
+    def __init__ (self, initial_balance):
+        self.balance = initial_balance
+    
+    def deposit (self, deposit_amount):
+        self.balance += deposit_amount
+        print(f"Deposited : {deposit_amount} rupees")
+
+    def withdraw (self, withdraw_amount):
+        if self.balance >= withdraw_amount:
+            self.balance -= withdraw_amount
+            print(f"Withdrawed : {withdraw_amount} rupees")
+
+        else:
+            print("insufficent Balnace Try Again")
+
+    def checkbalance(self):
+        print(f"You Balance is {self.balance}")
+
+account1= BankAccount(100)
+
+
+
+while True:
+    print("Press 1 to doposit in your account")
+    print("Press 2 for withdraw")
+    print("Press 3 to check balance")
+    print("Press 4 to exit")
+
+    choice = int(input())
+    if choice == 1:
+        print("Enter The amount To Deposite \n")
+        amount = int(input("-> "))
+        account1.deposit(amount)
+    
+    elif choice == 2:
+        print("Enter The Amount For Withdrawl \n")
+        amount = int(input("-> "))
+        account1.withdraw(amount)
+
+    elif choice == 3:
+        account1.checkbalance()
+    
+    elif choice == 4:
+        print("Thank You")
+        break
+
+    else:
+        print("Wrong input Try Again")
+        continue
+'''
+
+
+
 
 

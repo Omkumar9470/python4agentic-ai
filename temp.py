@@ -393,7 +393,39 @@ while True:
         continue
 '''
 
+'''
 
+# AI Agent
+
+class Agent:
+    def __init__ (self):
+        self.memory = []
+
+    def think (self, user_input):
+        print(f"Thinking about: '{user_input}' ")
+    
+    def act (self, user_input):
+        print(f"Acting On : '{user_input}' ")
+    
+    def remember (self, user_input):
+        print(f"I will remember : '{user_input}' ")
+        self.memory.append(user_input)
+
+agent1 = Agent()
+
+while True:
+    print("listening")
+    text = input("---")
+
+    if text.lower() == 'quit':
+        break
+
+
+    agent1.think(text)
+    agent1.act(text)
+    agent1.remember(text)
+    
+'''    
 
 
 

@@ -424,8 +424,41 @@ while True:
     agent1.think(text)
     agent1.act(text)
     agent1.remember(text)
-    
+
 '''    
 
+# Employee System
+
+class Employee :
+    def __init__ (self, name, age):
+        self.name = name
+        self.age = age
+        
+    def show_details (self):
+        print(f"Name: {self.name} | Age: {self.age} ")
+
+class Developer(Employee):
+    def __init__(self, name, age, programming_lang):
+        super().__init__(name, age)
+
+        self.programming_lang = programming_lang
+    
+    def show_details (self):
+        print(f"Role : Developer | Programing Language : {self.programming_lang}")
+
+class Manager(Employee):
+    def __init__ (self, name, age, team_size):
+        super().__init__(name, age)
+
+        self.team_size = team_size
+    
+    def show_details(self):
+        print(f"Role : Manager | Team Size : {self.team_size}")
+
+dev1 = Developer("Om", 23, "Python")
+mang1 = Manager("laudi", 21, "11")
+
+dev1.show_details()
+mang1.show_details()
 
 

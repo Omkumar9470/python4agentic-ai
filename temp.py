@@ -505,5 +505,21 @@ while True:
         print("Wrong Choice Try Again.")
 '''
 
+'''
+
+# Student JSON Database
+import json
+
+user = {
+  "name": "Om",
+  "age": 22,
+  "skills": ["Python", "AI"]
+}
+
+json_data = json.dumps(user)
+
+print(json_data)
+
+'''
 
 

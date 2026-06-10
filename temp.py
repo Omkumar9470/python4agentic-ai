@@ -427,6 +427,7 @@ while True:
 
 '''    
 
+'''
 # Employee System
 
 class Employee :
@@ -460,5 +461,49 @@ mang1 = Manager("laudi", 21, "11")
 
 dev1.show_details()
 mang1.show_details()
+
+'''
+
+'''
+# Notes App
+
+def add_note(text):
+    with open("notes.txt", "a") as file:
+        file.write(F"\n {text}")
+    
+    print("Note added successfully")
+
+def show_note():
+    with open("notes.txt", "r") as file:
+        for line in file:
+            print(line)
+
+print("Welcome To the Notes App")
+
+while True:
+    print("Press 1 to write in your notes")
+    print("Press 2 to view all the notes")
+    print("press 3 to exit")
+
+    choice = int(input("-> "))
+
+    if choice == 1:
+        print("Write your Note here")
+
+        text = input(" ")
+
+        add_note(text)
+    
+    elif choice == 2:
+        show_note()
+    
+    elif choice == 3:
+        print("Thanks Your Using")
+        exit()
+    
+    else:
+        print("Wrong Choice Try Again.")
+'''
+
 
 

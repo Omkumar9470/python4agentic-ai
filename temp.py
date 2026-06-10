@@ -522,4 +522,24 @@ print(json_data)
 
 '''
 
+'''
+# Chat History Saver
+
+def chat_saver(user_response):
+    with open("notes.txt", "a") as file:
+        file.write(f"\n User_Response: {user_response}")
+        print("Response Saved...")
+
+while True:
+    print("What Do You Want To Say? or type exit to close the program.")
+    user_response = input(" ")
+    if user_response.lower() == 'exit':
+        print("Agent Stopped")
+        break
+    else:
+        chat_saver(user_response)
+
+'''
+
+
 

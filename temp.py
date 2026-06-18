@@ -629,5 +629,65 @@ while True:
     print(f"Got it you said '{user_response}' ")
 '''
 
+# User Profile Manager
+
+import json
+
+def save_user (profile):
+    
+    with open("temp.json", "r") as file:
+        database = json.load(file)
+
+    database.append(profile)
+
+    with open("temp.json", "w") as file:
+        json.dump(database, file, indent=4)
+    
+    print("User added successfully")
+
+def read_json ():
+
+    with open("temp.json", "r") as file:
+        data = json.load(file)
+
+        print("current users")
+
+        for u in data:
+            print(f"Name:{u['name']} | Age: {u['age']}")
+        
+
+while True:
+    print("1 To add new user")
+    print("2 for see all users")
+    print("3 for exit")
+
+    response = input("")
+
+    if response == 1:
+        print("Give user details")
+
+        user = {}
+
+        print("Enter name")
+        name = input("")
+        user["name"] = name
+        print("Enter age")
+        age = int(input(""))
+        user["age"] = age
+
+        save_user(user)
+    
+    elif response == 2:
+        read_json()
+
+    elif response == 3:
+        print("Thanks for using the user database")
+        break
+
+    else:
+        print("unexpted error")
+        continue
+
+
 
 

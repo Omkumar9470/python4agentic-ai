@@ -541,5 +541,74 @@ while True:
 
 '''
 
+'''
+
+# User Profile Manager
+
+
+import json
+
+def save_json(profile):
+    # 1. Read the existing list from the file
+    with open("temp.json", "r") as file:
+        database = json.load(file)  # This reads the list []
+    
+    # 2. Append your new user dictionary into that list
+    database.append(profile)
+    
+    # 3. Overwrite the file ("w") with the completely updated list
+    with open("temp.json", "w") as file:
+        json.dump(database, file, indent=4)
+
+    print("User added successfully")
+
+def read_json():
+    with open("temp.json", "r") as file:
+        data = json.load(file)
+        
+        print("\n--- Current Users ---")
+        # Since data is now a proper list, loop through it to display it cleanly
+        for u in data:
+            print(f"Name: {u['name']} | Age: {u['age']}")
+        print("---------------------\n")
+
+
+# Fixed: Moved this inside the loop so old data clears out for new entries
+# user = {} 
+
+while True:
+    print("To add user press 1")
+    print("To view users press 2")
+    print("To exit press 3")
+
+    choice = int(input("-> "))
+
+    if choice == 1:
+        print("Enter Details")
+
+        # Fixed: Creating a clean dictionary for each individual entry
+        user = {} 
+        
+        print("Enter Your Name:")
+        a = input("---")
+        user["name"] = a
+        print("Enter your Age:")
+        b = int(input("---"))
+        user["age"] = b
+
+        save_json(user)
+
+    elif choice == 2:
+        read_json()
+
+    elif choice == 3:
+        print("quiting")
+        break
+
+    else :
+        print("Wrong input")
+'''
+
+
 
 

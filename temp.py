@@ -609,6 +609,25 @@ while True:
         print("Wrong input")
 '''
 
+'''
+
+# Chat History Saver
+
+
+def file_write (user_response):
+    with open("notes.txt", "a")as file:
+        file.write(f"{user_response}\n")
+
+while True:
+    print("What Do You Want To Say? (Type 'exit' to end chatting)")
+    user_response = input("")
+    if user_response.lower() == 'exit':
+        print("Thanks For The Chat, We have saved your data")
+        break
+    
+    file_write(user_response)
+    print(f"Got it you said '{user_response}' ")
+'''
 
 
 

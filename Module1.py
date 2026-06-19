@@ -822,6 +822,8 @@ while True:
 
 '''
 
+'''
+
 # File Reader
 
 def open_file(filename):
@@ -842,5 +844,68 @@ while True:
         break
     
     open_file(filename)
+'''
+
+# Login Validator
+
+class UsernameTooShortError(Exception):
+    pass
+
+class WeakPasswordError(Exception):
+    pass
+
+
+def username_validator(username):
+    
+    if len(username) <= 5:
+        raise UsernameTooShortError("Username must be greater than 5 characters.")
+
+    print("Username Accepted")
+    return username
+
+def pass_validator(password):
+    
+    if len(password) < 8:
+        raise WeakPasswordError("Password must be at least 8 characters long.")
+    
+    has_digit = False
+    has_upper = False
+
+    for char in password:
+        if char.isdigit():
+            has_digit = True
+        if char.isupper():
+            has_upper = True
+
+    
+    if not has_digit:
+        raise WeakPasswordError("Password must contain at least one digit (0-9).")
+
+    if not has_upper:
+        raise WeakPasswordError("Password must contain at least one uppercase letter (A-Z).")
+    
+    print("Password Accepted")
+    return True
+
+while True:
+    print("\n--- Account Registration Validator ---")
+
+    try:
+        username = input("Enter Your Username -> ")
+        password = input("Enter Your Password -> ")
+
+        username_validator(username)
+
+        pass_validator(password)
+
+        break
+
+    except UsernameTooShortError as error_message:
+        print(f"\n Failed: {error_message}")
+        print("Please try again.")
+    
+    except WeakPasswordError as error_message:
+        print(f"\n Failed: {error_message}")
+        print("Please try again.")
 
 

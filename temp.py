@@ -752,4 +752,75 @@ while True:
         print("Choice between 1 to 5")
 '''
 
+'''
+
+# ATM System
+
+def checkbalance(balance):
+    print(f"Your Account Balance: {balance}")
+
+def withdraw(balance, amount):
+
+    if amount > balance:
+        print("Insufficent Balance")
+    
+    else:
+        new_balance = balance - amount
+        print(f"Withdrawal successful. Remaining cash in account: {new_balance}")
+        return new_balance
+
+balance = 0
+while True:
+    print("Choose Your Transection")
+    print("Press 1 for balance enquery")
+    print("Press 2 for deposit")
+    print("Press 3 for withdraw")
+    print("To exit press 4")
+
+    choice = int(input("-> "))
+
+    if choice == 1:
+        checkbalance(balance)
+    elif choice == 2:
+        print("Enter the amount to deposit")
+        
+        try:
+            amount = int(input("-> "))
+        except ValueError:
+            print("Please Enter A Valid Amount")
+            continue
+
+        if amount <= 0:
+            print("Error: Deposit amount must be greater than zero.")
+            continue
+
+        balance += amount
+        print("Deposite successfull")
+        print(f"Your Updated Balance : {balance}")
+    
+    elif choice == 3:
+        print("Enter The Amount For Withdrawl")
+
+        try:
+            amount = int(input("-> "))
+        except ValueError:
+            print("Please Enter A Valid Amount")
+            continue
+
+        if amount <= 0:
+            print("Error: Withdrawl amount must be greater than zero.")
+            continue
+
+        balance = withdraw(balance, amount)
+
+    elif choice == 4:
+        print("Thanks For Using ATM")
+        break
+    else:
+        print("Enter A valid choice")
+        continue
+
+'''
+
+
 

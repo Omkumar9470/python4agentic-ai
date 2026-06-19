@@ -629,6 +629,8 @@ while True:
     print(f"Got it you said '{user_response}' ")
 '''
 
+
+'''
 # User Profile Manager
 
 import json
@@ -687,7 +689,67 @@ while True:
     else:
         print("unexpted error")
         continue
+'''
 
+'''
+# Safe Calculator
 
+def add (a,b):
+    print(f"Result: {a + b}")
+
+def subtract(a,b):
+    print( f"Result: {a-b}")
+
+def multiply(a,b):
+    print( f"Result: {a*b}")
+
+def divide(a,b):
+    if b == 0:
+        print("Error: Cannot Divide By Zero")
+    else:
+        print (f"Result: {a/b}")
+
+while True:
+    print("Enter Two Numbers")
+    try:
+        a = int(input("Enter the first number ->  "))
+    except ValueError:
+        print("Error: Enter a Valid number")
+        continue
+
+    try:
+        b = int(input("Enter the second number ->  "))
+    except ValueError:
+        print("Error: Enter a Valid number")
+        continue
+
+    print("Select Operation")
+    print("Press 1 for addition ")
+    print("Press 2 for subtraction")
+    print("Press 3 for multiplication")
+    print("Press 4 for division")    
+    print("Press 5 to exit")
+
+    try:
+        choice = int(input(" "))
+    except ValueError:
+        print("Please select numbers")
+    
+    if choice==1:
+        add(a,b)
+    elif choice == 2:
+        subtract(a,b)
+    elif choice == 3:
+        multiply(a,b)
+    elif choice==4:
+        divide(a,b)
+
+    elif choice==5:
+        print("Thanks for using ther calculator")
+        break
+    
+    else:
+        print("Choice between 1 to 5")
+'''
 
 

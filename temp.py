@@ -822,5 +822,25 @@ while True:
 
 '''
 
+# File Reader
+
+def open_file(filename):
+    try:
+        with open (filename, "r") as file:
+            content = file.read()
+            print(content)
+    except FileNotFoundError:
+        print("Error: File not found")
+
+while True:
+    print("Enter the file name to read it.")
+    print("To exit type 'quit' ")
+    filename = input("")
+
+    if filename.lower() == 'quit':
+        print("Exiting.............")
+        break
+    
+    open_file(filename)
 
 

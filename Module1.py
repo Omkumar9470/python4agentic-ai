@@ -912,6 +912,9 @@ while True:
         print("Please try again.")
 '''
 
+
+'''
+
 # Student Marks Analyser
 
 while True:
@@ -957,6 +960,50 @@ while True:
     if exit_choice.lower() != 'y':
         print("Closing Analyser System. Goodbye.")
         break
+'''
 
+# Contact Manager
+
+phone_book = {
+
+}
+
+while True:
+    print("Contact Manager")
+    print("1 For adding a new contact")
+    print("2 for show all contact")
+    print("3 to exit")
+
+    choice = int(input("-> "))
+
+    if choice == 1:
+        print("-" * 50)
+        print("Add a new contact")
+        name = input("Enter Name:  ")
+        phone = (input("Enter Number:  "))
+
+        if not phone.isdigit():
+            print("Phone number can only contain digits")
+            continue
+        if len(phone) != 10:
+            print("Phone number can only be of 10 digits")
+            continue
+
+        phone_book[name] = phone
+        print("Contact Added Successfully")
     
+    elif choice==2:
+        print("-" * 50)
+        if not phone_book:
+            print("Phone Book is empty")
+        else:
+            for index, (name, phone) in enumerate(phone_book.items()):
+                print(f"{index}. Name: {name} | Phone: {phone}")
+
+    elif choice == 3:
+        print("Closing Phone Book")
+        break
+    else:
+        print("Unexpected Error: choose 1,2,3")
+        continue
 

@@ -962,6 +962,8 @@ while True:
         break
 '''
 
+'''
+
 # Contact Manager
 
 phone_book = {
@@ -1006,4 +1008,139 @@ while True:
     else:
         print("Unexpected Error: choose 1,2,3")
         continue
+'''
+
+# Dynamic Calculator
+
+def add(*args):
+    result = sum(args)
+    print(f"The sum of all the numbers are:  {result}")
+
+def product(*args):
+    result = 1
+    for num in args:
+        result *= num
+    print(f"The Product of all the numbers are:  {result}")
+
+def subtract(*args):
+    if not args:
+        result = 0
+    else:
+        result = args[0]
+        for num in args[1:]:
+            result -= num
+    print(f"The Subctraction of all the numbers are:  {result}")
+
+def divide(*args):
+    if not args:
+        print("the Division of the numbers are: 0")
+        return
+    
+    result = args[0]
+
+    for num in args[1: ]:
+        if num == 0:
+            print("Error: Cannot divide by zero! Operation aborted.")
+            return
+        result /= num
+
+    print(f"the Division of all the numbers are:  {result}")
+
+
+while True:
+    print("The Dynamic Calculator")
+    print("Select Opertaion ( '+' , '-' , '*' , '/')")
+    operation = input("-> ")
+    
+    if operation == '+':
+        nums = []
+        print("Type 'add' to complete the operation")
+
+        while True:
+            a = input(": ")
+
+            if a.isnumeric():
+                nums.append(int(a))
+                print("Enter the next number")
+                continue
+
+            elif a.lower() == 'add':
+                add(*nums)
+                break
+
+            else:
+                print("Enter a valid response or a number")
+                continue
+    
+    elif operation == '-':
+        nums = []
+        print("Type 'sub' to complete the operation")
+
+        while True:
+            a = input(": ")
+
+            if a.isnumeric():
+                nums.append(int(a))
+                print("Enter the next number")
+                continue
+
+            elif a.lower() == 'sub':
+                subtract(*nums)
+                break
+
+            else:
+                print("Enter a valid response or a number")
+                continue
+    
+    elif operation == '*':
+        nums = []
+        print("Type 'multiply' to complete the operation")
+
+        while True:
+            a = input(": ")
+
+            if a.isnumeric():
+                nums.append(int(a))
+                print("Enter the next number")
+                continue
+
+            elif a.lower() == 'multiply':
+                product(*nums)
+                break
+
+            else:
+                print("Enter a valid response or a number")
+                continue
+    
+    elif operation == '/':
+        nums = []
+        print("Type 'divide' to complete the operation")
+
+        while True:
+            a = input(": ")
+
+            if a.isnumeric():
+                nums.append(int(a))
+                print("Enter the next number")
+                continue
+
+            elif a.lower() == 'divide':
+                divide(*nums)
+                break
+
+            else:
+                print("Enter a valid response or a number")
+                continue
+    
+    
+    else:
+        print("Enter a valid response")
+        continue
+    
+    print("You want to continue ? y/n")
+    choice = input(": ")
+
+    if choice == 'n':
+        print("Exiting....")
+        break
 

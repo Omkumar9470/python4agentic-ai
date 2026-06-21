@@ -846,6 +846,9 @@ while True:
     open_file(filename)
 '''
 
+
+'''
+
 # Login Validator
 
 class UsernameTooShortError(Exception):
@@ -907,5 +910,53 @@ while True:
     except WeakPasswordError as error_message:
         print(f"\n Failed: {error_message}")
         print("Please try again.")
+'''
 
+# Student Marks Analyser
+
+while True:
+    print("Enter the marks for all 7 subjects (out of 100).")
+
+    marks= []
+    subject_counter = 1
+
+    while subject_counter <= 7:
+        try:
+            m1 = int(input(f"Subject {subject_counter} -> "))
+            if m1 < 0 or m1 > 100:
+                print("Error: Marks must be between 0 and 100.")
+                continue
+            marks.append(m1)
+            subject_counter += 1
+        except ValueError:
+            print("Invalid input! Please enter a valid whole number.")
+            continue
+
+    print(f"Marks obtained by the student are {marks}")
+
+    passed_subjects = list(filter(lambda score: score >= 35, marks))
+    failed_subjects = list(filter(lambda score: score < 35, marks))
+
+    top_scores = list(filter(lambda score: score >= 90, marks))
+
+    print("Here is the report")
+    print("-" * 50)
+    print(f"Passed Subjects ->  {passed_subjects}")
+    print(f"Failed Subjects ->  {failed_subjects}")
+    print(f"Top Scores ->  {top_scores}")
+    print("-"*50)
+    print("School Allow Some Grace Marks ")
+
+    saved_students = list(
+        map(lambda score: score + 5, filter(lambda score: score < 40, marks)))
+    
+    print("-"*50)
+    print(f"Originally Failed Students after +5 Grace Boost: {saved_students}")
+
+    exit_choice = input("\nAnalyze another student? (y/n): ")
+    if exit_choice.lower() != 'y':
+        print("Closing Analyser System. Goodbye.")
+        break
+
+    
 

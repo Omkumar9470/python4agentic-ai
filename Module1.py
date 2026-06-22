@@ -1010,6 +1010,9 @@ while True:
         continue
 '''
 
+
+'''
+
 # Dynamic Calculator
 
 def add(*args):
@@ -1143,4 +1146,66 @@ while True:
     if choice == 'n':
         print("Exiting....")
         break
+'''
+
+# Profile Generator
+
+profile = []
+def user_info (**kwargs):
+    profile.append(kwargs)
+    print(f"User recorded with the given details {kwargs}")
+
+def show_user():
+    print("Here are the user details")
+    print("-"*50)
+    for val in profile:
+        print(val)
+
+while True:
+    print("Profile Generator")
+    print("1: for User Profile Generation")
+    print("2: For show all users")
+    choice = input("-> ")
+
+    if choice == '1':
+        print("Enter User Details")
+        print("Type 'done' in the field name when you are finished adding details.")    
+
+        user_data = {}
+        while True:
+            field_name = input("Enter the field name (eg. name, age, role, etc)\n").strip().lower()
+
+            if field_name == 'done':
+                break
+
+            if not field_name:
+                print("Cant proceed without the field name")
+                continue
+
+            field_value = input(f"Enter the value for: {field_name}\n").strip()
+
+            user_data[field_name] = field_value
+            print(f"Added field -> {field_name}: {field_value}\n")
+
+        if user_data:
+            user_info(**user_data)
+        else:
+            print("[Cancelled]: No details were provided. Profile creation skipped.")
+            
+    elif choice == '2':
+        show_user()
+
+    print("If you want to continue? y/n")
+    repeat = input(": ").lower()
+
+    if repeat == 'n':
+        print("Exiting")
+        break
+    
+
+
+
+
+
+
 

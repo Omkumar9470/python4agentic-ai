@@ -1148,6 +1148,8 @@ while True:
         break
 '''
 
+
+'''
 # Profile Generator
 
 profile = []
@@ -1201,7 +1203,8 @@ while True:
     if repeat == 'n':
         print("Exiting")
         break
-    
+'''
+
 
 
 

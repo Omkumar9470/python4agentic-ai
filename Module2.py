@@ -1010,6 +1010,8 @@ def streaming_chat():
 streaming_chat()
 '''
 
+'''
+
 # Streaming With Error Handeling
 
 from google import genai
@@ -1058,3 +1060,105 @@ def safe_stream(user_input: str) -> str:
 
 
 safe_stream("Explain vector databases in simple terms.")
+'''
+
+# Module 16 final assesment
+
+from google import genai
+from google.genai import types
+import time
+
+client = genai.Client()
+
+SYSTEM_PROMPT = """
+You are an expert AI Engineering tutor.
+Answer clearly and concisely.
+Use bullet points for lists.
+"""
+
+def streaming_chat():
+    history = []
+    turn = 0
+    print("AI Tutor (type 'quit' to exit)\n")
+
+    while True:
+        user_input = input("You: ").strip()
+
+        if user_input.lower() == "quit":
+            print("Goodbye!")
+            break
+
+        if user_input.lower() == "clear":
+            history.clear()
+            print("History reset")
+            turn = 0
+            continue
+
+        if user_input.lower() == "history":
+            print(f"Turns so far: {turn}")
+            continue
+
+        if not user_input:
+            continue
+
+        history.append(
+            types.Content(
+                role="user",
+                parts=[types.Part(text=user_input)]
+            )
+        )
+
+        full_reply = ""
+
+        for attempt in range(2):
+            try:
+
+                print("Bot: ", end="", flush=True)
+
+                full_reply = ""
+
+                time.sleep(30)
+
+                for chunk in client.models.generate_content_stream(
+                    model="gemini-2.5-flash",
+                    contents=history,
+                    config=types.GenerateContentConfig(
+                        system_instruction=SYSTEM_PROMPT
+                    )
+                ):
+                    print(chunk.text, end="", flush=True)
+                    full_reply += chunk.text
+
+                break
+
+            except Exception as e:
+                print(f"\n[Stream error: {e}]")
+
+                if attempt == 0:
+                    print("Retrying in 60 seconds ....")
+                    time.sleep(61)
+                else:
+                    print("Retry Failed.")
+                    full_reply = "Sorry, I couldn't generate a response at the moment."
+
+        print()
+
+        turn += 1
+
+        tokens = len(full_reply) // 4
+        print("=" * 50)
+        print(f"[Tokens: ~{tokens} | Turn: {turn}]")
+        print("=" * 50)
+
+        history.append(
+            types.Content(
+                role="model",
+                parts=[types.Part(text=full_reply)]
+            )
+        )
+
+        if len(history) > 10:
+            history = history[-10:]
+
+
+streaming_chat()

@@ -943,6 +943,7 @@ def stream_and_collect(user_input: str) -> str:
 reply = stream_and_collect("Explain the difference between supervised and unsupervised learning.")
 '''
 
+'''
 # Streaming With Chat Memory
 
 from google import genai
@@ -1007,3 +1008,46 @@ def streaming_chat():
 
 
 streaming_chat()
+'''
+
+# Streaming With Error Handeling
+
+from google import genai
+from google.genai import types
+
+client = genai.Client()
+
+def safe_stream(user_input: str) -> str:
+    full_response = ""
+
+    try:
+        print("Bot: ", end="", flush=True)
+
+        for chunk in client.models.generate_content_stream(
+            model="gemini-2.5-flash",
+            contents=user_input,
+            config=types.GenerateContentConfig(
+                system_instruction=""" 
+                You are an expert AI Engineering tutor.
+                Answer clearly and concisely.
+                Use bullet points for lists.
+
+                """
+            )
+        ):
+            
+            if chunk.text:
+                print(chunk.text, end="", flush=True)
+                full_response += chunk.text
+
+        print()
+
+    except Exception as e:
+        print(f"\n[Stream error: {e}]")
+        return full_response or "Error occurred during streaming."
+
+    return full_response
+
+
+
+safe_stream("Explain vector databases in simple terms.")

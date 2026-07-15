@@ -1014,39 +1014,46 @@ streaming_chat()
 
 from google import genai
 from google.genai import types
+import time
 
 client = genai.Client()
 
 def safe_stream(user_input: str) -> str:
-    full_response = ""
+    for attempt in range(2):
+        full_response = ""
+        
+        try:
+            print("Bot: ", end="", flush=True)
 
-    try:
-        print("Bot: ", end="", flush=True)
+            for chunk in client.models.generate_content_stream(
+                model="gemini-2.5-flash",
+                contents=user_input,
+                config=types.GenerateContentConfig(
+                    system_instruction=""" 
+                    You are an expert AI Engineering tutor.
+                    Answer clearly and concisely.
+                    Use bullet points for lists.
 
-        for chunk in client.models.generate_content_stream(
-            model="gemini-2.5-flash",
-            contents=user_input,
-            config=types.GenerateContentConfig(
-                system_instruction=""" 
-                You are an expert AI Engineering tutor.
-                Answer clearly and concisely.
-                Use bullet points for lists.
+                    """
+                )
+            ):
+                
+                if chunk.text:
+                    print(chunk.text, end="", flush=True)
+                    full_response += chunk.text
 
-                """
-            )
-        ):
+            print()
+
+        except Exception as e:
+            print(f"\n[Stream error: {e}]")
             
-            if chunk.text:
-                print(chunk.text, end="", flush=True)
-                full_response += chunk.text
-
-        print()
-
-    except Exception as e:
-        print(f"\n[Stream error: {e}]")
-        return full_response or "Error occurred during streaming."
-
-    return full_response
+            if attempt == 0:
+                print("Retrying in 5 seconds ....")
+                time.sleep(5)
+            else:
+                print("Rety Failed.")
+            
+    return "Sorry, I couldn't generate a response at the moment. Please try again later."
 
 
 

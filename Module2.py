@@ -870,6 +870,8 @@ for chunk in client.models.generate_content_stream(
 print() 
 '''
 
+'''
+
 # Streaming with system prompt
 
 from google import genai
@@ -895,3 +897,36 @@ def stream_response(user_input: str):
 
 # Test
 stream_response("What are the phases of the moon?")
+'''
+
+# Streaming with history
+
+from google import genai
+from google.genai import types
+
+client = genai.Client()
+
+def stream_and_collect(user_input: str) -> str:
+    full_response = ""
+
+    print("Bot: ", end="", flush=True)
+
+    for chunk in client.models.generate_content_stream(
+        model="gemini-2.5-flash",
+        contents=user_input,
+        config=types.GenerateContentConfig(
+            system_instruction="You are a helpful assistant. do not give long answers. explain in points"
+        )
+    ):
+        print(chunk.text, end="", flush=True)
+        full_response += chunk.text 
+
+    print()
+
+    return full_response
+
+
+
+reply = stream_and_collect("What is machine learning?")
+
+print(f"\n[Stored response: {len(reply)} characters]")

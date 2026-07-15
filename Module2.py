@@ -899,6 +899,8 @@ def stream_response(user_input: str):
 stream_response("What are the phases of the moon?")
 '''
 
+'''
+
 # Streaming with history
 
 from google import genai
@@ -939,4 +941,69 @@ def stream_and_collect(user_input: str) -> str:
 
 
 reply = stream_and_collect("Explain the difference between supervised and unsupervised learning.")
+'''
 
+# Streaming With Chat Memory
+
+from google import genai
+from google.genai import types
+
+client = genai.Client()
+
+SYSTEM_PROMPT = """
+You are an expert AI Engineering tutor.
+Answer clearly and concisely.
+Use bullet points for lists.
+"""
+
+def streaming_chat():
+    history = []
+    print("AI Tutor (type 'quit' to exit)\n")
+
+    while True:
+        user_input = input("You: ").strip()
+        if user_input.lower() == "quit":
+
+            print("Goodbye!")
+            break
+
+        if not user_input:
+            continue
+
+        
+        history.append(
+            types.Content(
+            role="user",
+            parts=[types.Part(text=user_input)]
+            )
+        )
+
+        
+        recent = history[-10:]
+
+        print("Bot: ", end="", flush=True)
+        full_reply = ""
+
+        for chunk in client.models.generate_content_stream(
+            model="gemini-2.5-flash",
+            contents=recent,
+            config=types.GenerateContentConfig(
+                system_instruction=SYSTEM_PROMPT
+            )
+        ):
+            print(chunk.text, end="", flush=True)
+            full_reply += chunk.text
+
+        print("\n")
+
+        
+        history.append(
+            types.Content(
+                role="model",
+                parts=[types.Part(text=full_reply)]
+            )
+        )
+
+
+
+streaming_chat()

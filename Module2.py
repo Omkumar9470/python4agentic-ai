@@ -923,10 +923,20 @@ def stream_and_collect(user_input: str) -> str:
 
     print()
 
-    return full_response
+    characters_full_response = len(full_response)
+
+    tokens = characters_full_response // 4
+
+    print("-"* 50)
+
+    print(f"Tokens (approx): {tokens}")
+    print(f"Characters: {characters_full_response}")
+
+    print("-" * 50)
+
+    return full_response , characters_full_response , tokens
 
 
 
-reply = stream_and_collect("What is machine learning?")
+reply = stream_and_collect("Explain the difference between supervised and unsupervised learning.")
 
-print(f"\n[Stored response: {len(reply)} characters]")

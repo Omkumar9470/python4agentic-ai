@@ -1062,6 +1062,8 @@ def safe_stream(user_input: str) -> str:
 safe_stream("Explain vector databases in simple terms.")
 '''
 
+'''
+
 # Module 16 final assesment
 
 from google import genai
@@ -1162,3 +1164,4 @@ def streaming_chat():
 
 
 streaming_chat()
+'''

@@ -57,6 +57,61 @@ def search_ai_topics(topic: str) -> dict:
                    "rag, agent, embedding, langchain, langgraph, transformer"
     }
 
+def get_learning_progress() -> dict:
+    return {
+        "current_phase": "Phase 2 - LLM Engineering",
+        "completed_modules": [11, 12, 13, 14, 15, 16, 17],
+        "next_module": "Phase 3 - RAG Systems",
+        "completion_percentage": 20
+    }
+
+
+def recommend_resource(topic: str) -> dict:
+
+    resources = {
+        "rag": {
+            "resource": "RAG From Scratch - LangChain Documentation",
+            "type": "docs",
+            "difficulty": "intermediate"
+        },
+        "langchain": {
+            "resource": "LangChain Crash Course - YouTube",
+            "type": "video",
+            "difficulty": "beginner"
+        },
+        "langgraph": {
+            "resource": "LangGraph Official Documentation",
+            "type": "docs",
+            "difficulty": "intermediate"
+        },
+        "embedding": {
+            "resource": "Embeddings Explained - Pinecone Learn",
+            "type": "article",
+            "difficulty": "beginner"
+        },
+        "prompt engineering": {
+            "resource": "Prompt Engineering Guide",
+            "type": "article",
+            "difficulty": "beginner"
+        }
+    }
+
+    data = resources.get(
+        topic.lower(),
+        {
+            "resource": "No resource found.",
+            "type": "unknown",
+            "difficulty": "unknown"
+        }
+    )
+
+    return {
+        "topic": topic,
+        "resource": data["resource"],
+        "type": data["type"],
+        "difficulty": data["difficulty"]
+    }
+
 
 
 def execute_tool(name: str, args: dict) -> dict:
@@ -64,6 +119,10 @@ def execute_tool(name: str, args: dict) -> dict:
         return get_current_date(**args)
     elif name == "search_ai_topics":
         return search_ai_topics(**args)
+    elif name == "get_learning_progress":
+        return get_learning_progress()
+    elif name == "recommend_resource":
+        return recommend_resource(**args)
     return {"error": f"Unknown tool: {name}"}
 
 
@@ -95,7 +154,30 @@ TOOLS = types.Tool(
                 "properties": {
                     "topic": {
                         "type": "string",
-                        "description": "AI topic to search e.g. RAG, agent, embedding"
+                        "description": "AI topic to search (e.g. RAG, Agent, Embedding)"
+                    }
+                },
+                "required": ["topic"]
+            }
+        },
+        {
+            "name": "get_learning_progress",
+            "description": "Get the user's current AI Engineering learning progress",
+            "parameters": {
+                "type": "object",
+                "properties": {},
+                "required": []
+            }
+        },
+        {
+            "name": "recommend_resource",
+            "description": "Recommend a learning resource for an AI Engineering topic",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "topic": {
+                        "type": "string",
+                        "description": "Topic to recommend a resource for"
                     }
                 },
                 "required": ["topic"]

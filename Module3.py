@@ -50,6 +50,8 @@ for i, chunk in enumerate(chunks):
 
 '''
 
+
+'''
 # Sentence Based Chunking
 
 import re
@@ -75,5 +77,52 @@ chunks = sentence_chunks(SAMPLE_TEXT, sentences_per_chunk=4, overlap=2)
 
 for i, chunk in enumerate(chunks):
     print(f"Chunk {i+1}:")
+    print(chunk)
+    print("─" * 40)
+
+'''
+
+# Paragraph based chunking
+new_para = """ 
+
+
+Maya loved exploring the old garden behind her grandmother's house.
+One afternoon, she discovered a tiny, dusty seed hidden inside a cracked clay pot. 
+Her grandmother smiled and said, "That seed has been waiting for someone who believes it can grow."
+
+Curious, Maya planted the seed in a small patch of soil and watered it every day. 
+Weeks passed, but nothing happened. 
+Many people told her to give up, yet she continued to care for it with patience and hope.
+
+One morning, Maya noticed a small green sprout pushing through the earth. 
+As the days went by, it grew into a beautiful tree with bright golden flowers that filled the garden with a sweet fragrance.
+Neighbors came from far away just to admire its beauty.
+
+The tree became a symbol of hope in the village. 
+Whenever someone felt discouraged, they would visit the garden and remember Maya's patience and determination. 
+They realized that great things often take time to grow.
+
+From that day on, Maya understood that success is much like planting a seed. 
+With faith, hard work, and patience, even the smallest dream can blossom into something extraordinary.
+
+"""
+
+def paragraph_chunks(text: str, min_length: int = 50) -> list[str]:
+    
+    paragraphs = text.split("\n\n")
+
+    chunks = []
+    for para in paragraphs:
+        cleaned = para.strip()
+        if len(cleaned) >= min_length:
+            chunks.append(cleaned)
+
+    return chunks
+
+
+chunks = paragraph_chunks(new_para, min_length=50)
+
+for i, chunk in enumerate(chunks):
+    print(f"Chunk {i+1} ({len(chunk)} chars):")
     print(chunk)
     print("─" * 40)

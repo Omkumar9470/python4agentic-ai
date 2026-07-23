@@ -131,6 +131,7 @@ for i, chunk in enumerate(chunks):
     print("─" * 40)
 '''
 
+'''
 # Recursive Chunking
 
 def recursive_chunks(
@@ -189,3 +190,172 @@ for i, chunk in enumerate(chunks):
     print(f"Chunk {i+1} ({len(chunk)} chars):")
     print(chunk)
     print("─" * 40)
+
+'''
+
+# Compare strategies
+import re
+
+def fixed_size_chunks(text: str, chunk_size: int = 200, overlap: int = 20) -> list[str]:
+    
+    chunks = []
+    start  = 0
+
+    while start < len(text):
+        end   = start + chunk_size
+        chunk = text[start:end].strip()
+
+        if chunk:
+            chunks.append(chunk)
+
+        start += chunk_size - overlap
+
+    return chunks
+
+
+def sentence_chunks(text: str, sentences_per_chunk: int = 3, overlap: int = 1) -> list[str]:
+
+    sentences = re.split(r'(?<=[.!?])\s+', text.strip())
+    sentences = [s.strip() for s in sentences if s.strip()]
+
+    chunks = []
+    step   = sentences_per_chunk - overlap
+
+    for i in range(0, len(sentences), step):
+        chunk = " ".join(sentences[i:i + sentences_per_chunk])
+        if chunk:
+            chunks.append(chunk)
+
+    return chunks
+
+def paragraph_chunks(text: str, min_length: int = 50) -> list[str]:
+    
+    paragraphs = text.split("\n\n")
+
+    chunks = []
+    for para in paragraphs:
+        cleaned = para.strip()
+        if len(cleaned) >= min_length:
+            chunks.append(cleaned)
+
+    return chunks
+
+def recursive_chunks(
+    text: str,
+    chunk_size: int = 300,
+    overlap: int = 30,
+    separators: list[str] = None
+) -> list[str]:
+    
+    if separators is None:
+        separators = ["\n\n", "\n", ". ", " ", ""]
+
+    def split_text(text: str, separators: list[str]) -> list[str]:
+
+        if len(text) <= chunk_size:
+            return [text.strip()] if text.strip() else []
+
+        for sep in separators:
+            if sep in text:
+                parts  = text.split(sep)
+                chunks = []
+                current = ""
+
+                for part in parts:
+                    test = (current + sep + part).strip() if current else part.strip()
+
+                    if len(test) <= chunk_size:
+                        current = test
+                    else:
+                        if current:
+                            chunks.append(current)
+
+                        if len(part) > chunk_size:
+                            remaining_seps = separators[separators.index(sep)+1:]
+                            chunks.extend(split_text(part, remaining_seps))
+                            current = ""
+                        else:
+                            overlap_text = current[-overlap:] if overlap and current else ""
+                            current = (overlap_text + " " + part).strip() if overlap_text else part.strip()
+
+                if current:
+                    chunks.append(current)
+
+                return [c for c in chunks if c.strip()]
+
+
+        return [text[i:i+chunk_size].strip() for i in range(0, len(text), chunk_size - overlap)]
+
+    return split_text(text, separators)
+
+def run_strategy(text: str, strategy: str) -> list[str]:
+
+    strategy = strategy.lower()
+
+    if strategy == "fixed_size_chunks":
+        return fixed_size_chunks(text, chunk_size=400, overlap=50)
+
+    elif strategy == "sentence_chunks":
+        return sentence_chunks(text, sentences_per_chunk=4, overlap=2)
+
+    elif strategy == "paragraph_chunks":
+        return paragraph_chunks(text, min_length=50)
+
+    elif strategy == "recursive_chunks":
+        return recursive_chunks(text, chunk_size=300, overlap=30)
+
+    else:
+        raise ValueError(f"Unknown strategy: {strategy}")
+
+
+def compare_strategies(text: str, strat1: str, strat2: str) -> list[dict]:
+
+    chunks1 = run_strategy(text, strat1)
+    chunks2 = run_strategy(text, strat2)
+
+    print(f"\n{'='*50}")
+    print(f"Strategy: {strat1}")
+    print(f"{'='*50}")
+
+    for i, chunk in enumerate(chunks1):
+        print(f"Chunk {i+1} ({len(chunk)} chars):")
+        print(chunk)
+        print("─" * 40)
+
+    print(f"\n{'='*50}")
+    print(f"Strategy: {strat2}")
+    print(f"{'='*50}")
+
+    for i, chunk in enumerate(chunks2):
+        print(f"Chunk {i+1} ({len(chunk)} chars):")
+        print(chunk)
+        print("─" * 40)
+
+    comparison = [
+        {
+            "strategy": strat1,
+            "total_chunks": len(chunks1),
+            "chunks": chunks1
+        },
+        {
+            "strategy": strat2,
+            "total_chunks": len(chunks2),
+            "chunks": chunks2
+        }
+    ]
+
+    return comparison
+
+compare = compare_strategies(
+    SAMPLE_TEXT,
+    "paragraph_chunks",
+    "recursive_chunks"
+)
+
+print("\nComparison Summary")
+print("=" * 50)
+
+for item in compare:
+    print(f"Strategy      : {item['strategy']}")
+    print(f"Total Chunks  : {item['total_chunks']}")
+    print("-" * 50)

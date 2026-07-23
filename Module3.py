@@ -21,7 +21,7 @@ are popular vector database solutions.
 """
 
 
-'''
+
 # Fixed Size Chunking
 
 def fixed_size_chunks(text: str, chunk_size: int = 200, overlap: int = 20) -> list[str]:
@@ -40,7 +40,7 @@ def fixed_size_chunks(text: str, chunk_size: int = 200, overlap: int = 20) -> li
 
     return chunks
 
-
+'''
 chunks = fixed_size_chunks(SAMPLE_TEXT, chunk_size=400, overlap=50)
 
 for i, chunk in enumerate(chunks):
@@ -51,7 +51,7 @@ for i, chunk in enumerate(chunks):
 '''
 
 
-'''
+
 # Sentence Based Chunking
 
 import re
@@ -72,7 +72,7 @@ def sentence_chunks(text: str, sentences_per_chunk: int = 3, overlap: int = 1) -
     return chunks
 
 
-
+'''
 chunks = sentence_chunks(SAMPLE_TEXT, sentences_per_chunk=4, overlap=2)
 
 for i, chunk in enumerate(chunks):
@@ -83,7 +83,7 @@ for i, chunk in enumerate(chunks):
 '''
 
 
-'''
+
 
 # Paragraph based chunking
 new_para = """ 
@@ -122,7 +122,7 @@ def paragraph_chunks(text: str, min_length: int = 50) -> list[str]:
 
     return chunks
 
-
+'''
 chunks = paragraph_chunks(new_para, min_length=50)
 
 for i, chunk in enumerate(chunks):
@@ -363,6 +363,8 @@ for item in compare:
     print("-" * 50)
 '''
 
+'''
+
 # Chunk With MetaData
 
 def chunks_with_metadata(
@@ -409,3 +411,107 @@ for chunk in chunks:
     print(f"Text:   {chunk['text'][:60]}...")
     print(f"Meta:   {chunk['metadata']}")
     print("─" * 40)
+
+'''
+
+# Universal chunker assignment
+
+class UniversalChunker:
+
+    def __init__(self, chunk_size=300, overlap=30):
+        self.chunk_size = chunk_size
+        self.overlap = overlap
+
+    def chunk(self, text: str, source: str, strategy: str = "recursive") -> list[dict]:
+
+        if strategy.lower() == "fixed":
+            raw_chunks = fixed_size_chunks(
+                text,
+                chunk_size=self.chunk_size,
+                overlap=self.overlap
+            )
+
+        elif strategy.lower() == "sentence":
+            raw_chunks = sentence_chunks(
+                text,
+                sentences_per_chunk=3,
+                overlap=1
+            )
+
+        elif strategy.lower() == "paragraph":
+            raw_chunks = paragraph_chunks(
+                text,
+                min_length=50
+            )
+
+        elif strategy.lower() == "recursive":
+            raw_chunks = recursive_chunks(
+                text,
+                chunk_size=self.chunk_size,
+                overlap=self.overlap
+            )
+
+        else:
+            raise ValueError(f"Unknown strategy: {strategy}")
+
+        result = []
+
+        for i, chunk in enumerate(raw_chunks):
+
+            if i == 0:
+                position = "start"
+            elif i == len(raw_chunks) - 1:
+                position = "end"
+            else:
+                position = "middle"
+
+            result.append(
+                {
+                    "id": f"{source}_chunk_{i}",
+                    "text": chunk,
+                    "metadata": {
+                        "source": source,
+                        "chunk_index": i,
+                        "total_chunks": len(raw_chunks),
+                        "char_count": len(chunk),
+                        "token_approx": len(chunk) // 4,
+                        "word_count": len(chunk.split()),
+                        "has_question": "?" in chunk,
+                        "chunk_position": position
+                    }
+                }
+            )
+
+        return result
+
+    def stats(self, chunks: list[dict]):
+
+        lengths = [
+            chunk["metadata"]["char_count"]
+            for chunk in chunks
+        ]
+
+        tokens = sum(
+            chunk["metadata"]["token_approx"]
+            for chunk in chunks
+        )
+
+        print("=" * 50)
+        print("Chunk Statistics")
+        print("=" * 50)
+        print(f"Total Chunks   : {len(chunks)}")
+        print(f"Average Length : {sum(lengths) / len(lengths):.2f} chars")
+        print(f"Minimum Length : {min(lengths)} chars")
+        print(f"Maximum Length : {max(lengths)} chars")
+        print(f"Approx Tokens  : {tokens}")
+        print("=" * 50)
+
+chunker = UniversalChunker(chunk_size=300, overlap=30)
+
+chunks = chunker.chunk(
+    text=SAMPLE_TEXT,
+    source="sample",
+    strategy="recursive"
+)
+
+chunker.stats(chunks)

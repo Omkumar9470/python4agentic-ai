@@ -82,6 +82,9 @@ for i, chunk in enumerate(chunks):
 
 '''
 
+
+'''
+
 # Paragraph based chunking
 new_para = """ 
 
@@ -122,6 +125,66 @@ def paragraph_chunks(text: str, min_length: int = 50) -> list[str]:
 
 chunks = paragraph_chunks(new_para, min_length=50)
 
+for i, chunk in enumerate(chunks):
+    print(f"Chunk {i+1} ({len(chunk)} chars):")
+    print(chunk)
+    print("─" * 40)
+'''
+
+# Recursive Chunking
+
+def recursive_chunks(
+    text: str,
+    chunk_size: int = 300,
+    overlap: int = 30,
+    separators: list[str] = None
+) -> list[str]:
+    
+    if separators is None:
+        separators = ["\n\n", "\n", ". ", " ", ""]
+
+    def split_text(text: str, separators: list[str]) -> list[str]:
+
+        if len(text) <= chunk_size:
+            return [text.strip()] if text.strip() else []
+
+        for sep in separators:
+            if sep in text:
+                parts  = text.split(sep)
+                chunks = []
+                current = ""
+
+                for part in parts:
+                    test = (current + sep + part).strip() if current else part.strip()
+
+                    if len(test) <= chunk_size:
+                        current = test
+                    else:
+                        if current:
+                            chunks.append(current)
+
+                        if len(part) > chunk_size:
+                            remaining_seps = separators[separators.index(sep)+1:]
+                            chunks.extend(split_text(part, remaining_seps))
+                            current = ""
+                        else:
+                            overlap_text = current[-overlap:] if overlap and current else ""
+                            current = (overlap_text + " " + part).strip() if overlap_text else part.strip()
+
+                if current:
+                    chunks.append(current)
+
+                return [c for c in chunks if c.strip()]
+
+
+        return [text[i:i+chunk_size].strip() for i in range(0, len(text), chunk_size - overlap)]
+
+    return split_text(text, separators)
+
+
+chunks = recursive_chunks(SAMPLE_TEXT, chunk_size=300, overlap=30)
+
+print(f"Total chunks: {len(chunks)}\n")
 for i, chunk in enumerate(chunks):
     print(f"Chunk {i+1} ({len(chunk)} chars):")
     print(chunk)

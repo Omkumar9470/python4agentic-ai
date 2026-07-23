@@ -131,7 +131,7 @@ for i, chunk in enumerate(chunks):
     print("─" * 40)
 '''
 
-'''
+
 # Recursive Chunking
 
 def recursive_chunks(
@@ -182,7 +182,7 @@ def recursive_chunks(
 
     return split_text(text, separators)
 
-
+'''
 chunks = recursive_chunks(SAMPLE_TEXT, chunk_size=300, overlap=30)
 
 print(f"Total chunks: {len(chunks)}\n")
@@ -190,6 +190,8 @@ for i, chunk in enumerate(chunks):
     print(f"Chunk {i+1} ({len(chunk)} chars):")
     print(chunk)
     print("─" * 40)
+
+'''
 
 '''
 
@@ -359,3 +361,51 @@ for item in compare:
     print(f"Strategy      : {item['strategy']}")
     print(f"Total Chunks  : {item['total_chunks']}")
     print("-" * 50)
+'''
+
+# Chunk With MetaData
+
+def chunks_with_metadata(
+    text: str,
+    source: str,
+    chunk_size: int = 300,
+    overlap: int = 30
+) -> list[dict]:
+    
+    raw_chunks = recursive_chunks(text, chunk_size, overlap)
+
+    result = []
+    
+    for i, chunk in enumerate(raw_chunks):
+        result.append({
+            "id":       f"{source}_chunk_{i}",
+            "text":     chunk,
+            "metadata": {
+                "source":       source,
+                "chunk_index":  i,
+                "total_chunks": len(raw_chunks),
+                "char_count":   len(chunk),
+                "token_approx": len(chunk) // 4,
+                "word_count" : len(chunk.split()),
+                "has_question" : "?" in chunk,
+                "chunk_position": (
+                                    "start"
+                                    if i == 0
+                                    else "end"
+                                    if i == len(raw_chunks) - 1
+                                    else "middle"
+                                )
+            }
+        })
+
+    return result
+
+
+
+chunks = chunks_with_metadata(SAMPLE_TEXT, source="ai_overview.txt")
+
+for chunk in chunks:
+    print(f"ID:     {chunk['id']}")
+    print(f"Text:   {chunk['text'][:60]}...")
+    print(f"Meta:   {chunk['metadata']}")
+    print("─" * 40)

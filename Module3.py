@@ -413,7 +413,7 @@ for chunk in chunks:
     print("─" * 40)
 
 '''
-
+'''
 # Universal chunker assignment
 
 class UniversalChunker:
@@ -515,3 +515,21 @@ chunks = chunker.chunk(
 )
 
 chunker.stats(chunks)
+'''
+
+# First Collection
+
+import chromadb
+
+
+client = chromadb.Client()
+
+
+client = chromadb.PersistentClient(path="./chroma_db")
+
+
+collection = client.create_collection(
+    name="ai_knowledge",
+)
+
+print("Collection created:", collection.name)

@@ -560,12 +560,66 @@ def embed(text: str) -> list[float]:
 
 
 chunks = [
+    {
+        "id":   "chunk_0",
+        "text": "RAG stands for Retrieval Augmented Generation. "
+                "It combines LLMs with external knowledge bases "
+                "to reduce hallucination.",
+        "metadata": {"source": "ai_overview.txt", 
+        "topic": "RAG",
+        "difficulty": "intermediate"
+        }
+    },
+    {
+        "id":   "chunk_1",
+        "text": "ChromaDB is a free, open-source vector database. "
+                "It stores embeddings and enables fast similarity "
+                "search for RAG systems.",
+        "metadata": {"source": "ai_overview.txt",
+         "topic": "ChromaDB",
+        "difficulty": "biginner"
+         }
+    },
+    {
+        "id":   "chunk_2",
+        "text": "Embeddings are vector representations of text. "
+                "Similar meanings produce similar vectors. "
+                "Cosine similarity measures closeness.",
+        "metadata": {
+        "source": "ai_overview.txt", 
+        "topic": "Embeddings",
+        "difficulty": "intermediate"
+        }
+    },
+    {
+        "id":   "chunk_3",
+        "text": "LangGraph is a framework for building stateful "
+                "multi-agent workflows as graphs. Nodes are agents "
+                "or tools. Edges define information flow.",
+        "metadata": {
+        "source": "ai_overview.txt", 
+        "topic": "LangGraph",
+        "difficulty": "advanced"
+        }
+    },
+    {
+        "id":   "chunk_4",
+        "text": "Prompt engineering is the skill of designing inputs "
+                "to LLMs to get reliable outputs. Techniques include "
+                "zero-shot, few-shot, and chain of thought.",
+        "metadata": {
+        "source": "ai_overview.txt", 
+        "topic": "Prompting",
+        "difficulty": "beginner"
+        }
+    },
      {
         "id": "chunk_5",
         "text": "Agentic AI refers to AI systems that can reason, plan, and take actions autonomously to achieve goals. They combine large language models with memory, tools, and decision-making loops to solve multi-step tasks.",
         "metadata": {
             "source": "ai_overview.txt",
-            "topic": "Agentic AI"
+            "topic": "Agentic AI",
+            "difficulty": "beginner"
         }
     },
     {
@@ -573,7 +627,8 @@ chunks = [
         "text": "Tool calling enables a language model to invoke external functions or APIs when additional information or computation is required. The model decides which tool to use based on the user's request and integrates the result into its response.",
         "metadata": {
             "source": "ai_overview.txt",
-            "topic": "Tool Calling"
+            "topic": "Tool Calling",
+            "difficulty": "advanced"
         }
     },
     {
@@ -581,7 +636,8 @@ chunks = [
         "text": "Vector databases store high-dimensional embedding vectors and perform fast similarity searches. Popular vector databases include ChromaDB, Pinecone, Weaviate, Milvus, and FAISS. They are widely used in Retrieval-Augmented Generation systems.",
         "metadata": {
             "source": "ai_overview.txt",
-            "topic": "Vector Databases"
+            "topic": "Vector Databases",
+            "difficulty": "intermediate"
         }
     },
     {
@@ -589,7 +645,8 @@ chunks = [
         "text": "Fine-tuning modifies a model's parameters using additional training data, while Retrieval-Augmented Generation keeps the model unchanged and retrieves relevant external documents during inference. RAG is generally faster and easier to update with new knowledge.",
         "metadata": {
             "source": "ai_overview.txt",
-            "topic": "Fine-tuning vs RAG"
+            "topic": "Fine-tuning vs RAG",
+            "difficulty": "beginner"
         }
     },
     {
@@ -597,7 +654,8 @@ chunks = [
         "text": "Python is the most popular programming language for AI Engineering because of its simple syntax and rich ecosystem. Libraries such as NumPy, Pandas, PyTorch, TensorFlow, LangChain, and Google GenAI SDK help developers build intelligent applications efficiently.",
         "metadata": {
             "source": "ai_overview.txt",
-            "topic": "Python for AI Engineering"
+            "topic": "Python for AI Engineering",
+            
         }
     },
 ]
@@ -665,7 +723,7 @@ def search(query: str, n_results: int = 3) -> list[dict]:
     return output
 
 
-
+'''
 query   = "How do I store embeddings?"
 results = search(query, n_results=2)
 
@@ -676,3 +734,39 @@ for r in results:
     print(f"Topic:    {r['metadata']['topic']}")
     print(f"Text:     {r['text'][:80]}...")
     print("─" * 40)
+'''
+
+
+# filtering with MetaData
+
+
+
+results = collection.query(
+    query_embeddings = [embed("explain AI concepts")],
+    n_results        = 3,
+    where            = {"difficulty": "beginner"},  
+    include          = ["documents", "metadatas", "distances"]
+)
+
+print(results["documents"])
+
+for i in range(len(results["ids"][0])):
+    print(f"ID: {results['ids'][0][i]}")
+    print(f"Topic: {results['metadatas'][0][i]['topic']}")
+    print(f"Difficulty: {results['metadatas'][0][i]['difficulty']}")
+    print(f"Distance: {results['distances'][0][i]}")
+    print(f"Text: {results['documents'][0][i]}")
+    print("-" * 50)
+
+
+resultss = collection.query(
+    query_embeddings = [embed("AI tools and frameworks")],
+    n_results        = 3,
+    where            = {
+        "$and": [
+            {"source":  {"$eq": "ai_overview.txt"}},
+            {"topic":   {"$in": ["RAG", "LangGraph", "Prompting"]}}
+        ]
+    },
+    include = ["documents", "metadatas", "distances"]
+)

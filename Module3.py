@@ -536,6 +536,8 @@ collection = client.create_collection(
 print("Collection created:", collection.name)
 '''
 
+'''
+
 # Adding Documents in the collection
 
 import chromadb
@@ -619,3 +621,58 @@ ids = collection.get()["ids"]
 
 for chunk_id in ids:
     print(chunk_id)
+'''
+
+# Semantic Search
+
+import chromadb
+from google import genai
+
+client_ai  = genai.Client()
+client_db  = chromadb.PersistentClient(path="./chroma_db")
+
+collection = client_db.get_or_create_collection(
+    name="ai_knowledge"
+)
+
+def embed(text: str) -> list[float]:
+    response = client_ai.models.embed_content(
+        model="models/gemini-embedding-001",
+        contents=text
+    )
+    return response.embeddings[0].values
+
+def search(query: str, n_results: int = 3) -> list[dict]:
+   
+    query_embedding = embed(query)
+
+    results = collection.query(
+        query_embeddings = [query_embedding],
+        n_results        = n_results,
+        include          = ["documents", "metadatas", "distances"]
+    )
+
+   
+    output = []
+    for i in range(len(results["ids"][0])):
+        output.append({
+            "id":       results["ids"][0][i],
+            "text":     results["documents"][0][i],
+            "metadata": results["metadatas"][0][i],
+            "distance": round(results["distances"][0][i], 4),
+        })
+
+    return output
+
+
+
+query   = "How do I store embeddings?"
+results = search(query, n_results=2)
+
+print(f"Query: {query}\n")
+for r in results:    
+    print(f"ID:       {r['id']}")
+    print(f"Distance: {r['distance']}  (lower = more similar)")
+    print(f"Topic:    {r['metadata']['topic']}")
+    print(f"Text:     {r['text'][:80]}...")
+    print("─" * 40)

@@ -517,6 +517,7 @@ chunks = chunker.chunk(
 chunker.stats(chunks)
 '''
 
+'''
 # First Collection
 
 import chromadb
@@ -533,3 +534,88 @@ collection = client.create_collection(
 )
 
 print("Collection created:", collection.name)
+'''
+
+# Adding Documents in the collection
+
+import chromadb
+from google import genai
+
+client_ai  = genai.Client()
+client_db  = chromadb.PersistentClient(path="./chroma_db")
+
+collection = client_db.get_or_create_collection(
+    name="ai_knowledge"
+)
+
+
+def embed(text: str) -> list[float]:
+    response = client_ai.models.embed_content(
+        model="models/gemini-embedding-001",
+        contents=text
+    )
+    return response.embeddings[0].values
+
+
+chunks = [
+     {
+        "id": "chunk_5",
+        "text": "Agentic AI refers to AI systems that can reason, plan, and take actions autonomously to achieve goals. They combine large language models with memory, tools, and decision-making loops to solve multi-step tasks.",
+        "metadata": {
+            "source": "ai_overview.txt",
+            "topic": "Agentic AI"
+        }
+    },
+    {
+        "id": "chunk_6",
+        "text": "Tool calling enables a language model to invoke external functions or APIs when additional information or computation is required. The model decides which tool to use based on the user's request and integrates the result into its response.",
+        "metadata": {
+            "source": "ai_overview.txt",
+            "topic": "Tool Calling"
+        }
+    },
+    {
+        "id": "chunk_7",
+        "text": "Vector databases store high-dimensional embedding vectors and perform fast similarity searches. Popular vector databases include ChromaDB, Pinecone, Weaviate, Milvus, and FAISS. They are widely used in Retrieval-Augmented Generation systems.",
+        "metadata": {
+            "source": "ai_overview.txt",
+            "topic": "Vector Databases"
+        }
+    },
+    {
+        "id": "chunk_8",
+        "text": "Fine-tuning modifies a model's parameters using additional training data, while Retrieval-Augmented Generation keeps the model unchanged and retrieves relevant external documents during inference. RAG is generally faster and easier to update with new knowledge.",
+        "metadata": {
+            "source": "ai_overview.txt",
+            "topic": "Fine-tuning vs RAG"
+        }
+    },
+    {
+        "id": "chunk_9",
+        "text": "Python is the most popular programming language for AI Engineering because of its simple syntax and rich ecosystem. Libraries such as NumPy, Pandas, PyTorch, TensorFlow, LangChain, and Google GenAI SDK help developers build intelligent applications efficiently.",
+        "metadata": {
+            "source": "ai_overview.txt",
+            "topic": "Python for AI Engineering"
+        }
+    },
+]
+
+
+print("Embedding and storing chunks...")
+
+collection.add(
+    ids        = [c["id"]       for c in chunks],
+    documents  = [c["text"]     for c in chunks],
+    embeddings = [embed(c["text"]) for c in chunks],
+    metadatas  = [c["metadata"] for c in chunks],
+)
+
+print(f"Stored {collection.count()} chunks.")
+
+print(f"\nTotal chunks in collection: {collection.count()}")
+
+print("\nStored Chunk IDs:")
+ids = collection.get()["ids"]
+
+for chunk_id in ids:
+    print(chunk_id)

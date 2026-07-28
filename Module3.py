@@ -680,7 +680,7 @@ ids = collection.get()["ids"]
 for chunk_id in ids:
     print(chunk_id)
 '''
-
+'''
 # Semantic Search
 
 import chromadb
@@ -723,7 +723,7 @@ def search(query: str, n_results: int = 3) -> list[dict]:
     return output
 
 
-'''
+
 query   = "How do I store embeddings?"
 results = search(query, n_results=2)
 
@@ -734,7 +734,7 @@ for r in results:
     print(f"Topic:    {r['metadata']['topic']}")
     print(f"Text:     {r['text'][:80]}...")
     print("─" * 40)
-'''
+
 
 
 # filtering with MetaData
@@ -747,7 +747,7 @@ results = collection.query(
     where            = {"difficulty": "beginner"},  
     include          = ["documents", "metadatas", "distances"]
 )
-'''
+
 print(results["documents"])
 
 for i in range(len(results["ids"][0])):
@@ -757,7 +757,7 @@ for i in range(len(results["ids"][0])):
     print(f"Distance: {results['distances'][0][i]}")
     print(f"Text: {results['documents'][0][i]}")
     print("-" * 50)
-'''
+
 
 resultss = collection.query(
     query_embeddings = [embed("AI tools and frameworks")],
@@ -797,3 +797,164 @@ result = collection.get(
     include = ["documents", "metadatas"]
 )
 print(result)
+
+
+# Collection Management All the operations
+
+# List all collections
+collections = client_db.list_collections()
+for col in collections:
+    print(col.name)
+
+# Delete all collections
+client_db.delete_collection("ai_knowledge")
+
+# Get or create a collection safe for production
+collection = client_db.get_or_create_collection(
+    name     = "ai_knowledge",
+    metadata = {"description": "AI Engineering knowledge base"}
+)
+
+# Peek at stored data
+peek = collection.peek(limit=3)
+print(peek["ids"])
+print(peek["documents"])
+
+'''
+
+# All together of chromaDb operations
+
+import chromadb
+from google import genai
+
+client_ai = genai.Client()
+client_db = chromadb.PersistentClient(path="./chroma_db")
+
+def embed(text: str) -> list[float]:
+    response = client_ai.models.embed_content(
+        model    = "models/gemini-embedding-001",
+        contents = text
+    )
+    return response.embeddings[0].values
+
+
+class KnowledgeBase:
+
+    def __init__(self, name: str):
+        self.collection = client_db.get_or_create_collection(name)
+        print(f"KB '{name}' ready. Chunks: {self.collection.count()}")
+
+    def add(self, chunks: list[dict]):
+        
+        self.collection.add(
+            ids        = [c["id"]          for c in chunks],
+            documents  = [c["text"]        for c in chunks],
+            embeddings = [embed(c["text"]) for c in chunks],
+            metadatas  = [c["metadata"]    for c in chunks],
+        )
+        print(f"Added {len(chunks)} chunks. Total: {self.collection.count()}")
+
+    def search(self, query: str, n: int = 3, filters: dict = None) -> list[dict]:
+        kwargs = {
+            "query_embeddings": [embed(query)],
+            "n_results":        n,
+            "include":          ["documents", "metadatas", "distances"]
+        }
+        if filters:
+            kwargs["where"] = filters
+
+        results = self.collection.query(**kwargs)
+
+        return [
+            {
+                "text":     results["documents"][0][i],
+                "metadata": results["metadatas"][0][i],
+                "score":    round(1 - results["distances"][0][i], 4),
+            }
+            for i in range(len(results["ids"][0]))
+        ]
+
+    def count(self) -> int:
+        return self.collection.count()
+
+    def remove(self, id: str):
+        try:
+            self.collection.delete(ids=[id])
+            print(f"Chunk '{id}' deleted successfully.")
+
+        except Exception as e:
+            print(f"Error deleting chunk: {e}")
+    
+    def update(self, id: str, new_text: str, new_metadata: dict):
+        try:
+            self.collection.update(
+                ids        = [id],
+                documents  = [new_text],
+                embeddings=[embed(new_text)],
+                metadatas  = [new_metadata]
+                            )
+            print(f"New Chunk Added {id}")
+        
+        except Exception as e:
+            print(f"Error adding chunkl : {e}")
+
+
+
+kb = KnowledgeBase("ai_knowledge_v2")
+
+kb.add([
+    {
+        "id":   "rag_intro",
+        "text": "RAG combines LLMs with vector databases to "
+                "ground responses in real documents.",
+        "metadata": {"topic": "RAG", "difficulty": "beginner"}
+    },
+    {
+        "id":   "chroma_intro",
+        "text": "ChromaDB is a local vector database for storing "
+                "and searching embeddings in RAG systems.",
+        "metadata": {"topic": "ChromaDB", "difficulty": "beginner"}
+    },
+    {
+        "id":   "agent_intro",
+        "text": "AI agents use tools in a loop to complete tasks "
+                "autonomously without human intervention.",
+        "metadata": {"topic": "Agents", "difficulty": "intermediate"}
+    },
+])
+
+'''
+results = kb.search("how does RAG reduce hallucination?", n=2)
+
+for r in results:
+    print(f"Score:    {r['score']}  (higher = more similar)")
+    print(f"Topic:    {r['metadata']['topic']}")
+    print(f"Text:     {r['text']}")
+    print("─" * 40)
+'''
+kb.add([
+    {
+        "id": "python_intro",
+        "text": "Python is the most popular language for AI Engineering.",
+        "metadata": {
+            "topic": "Python",
+            "difficulty": "beginner"
+        }
+    }
+])
+
+kb.update(
+    id="chroma_intro",
+    new_text="ChromaDB is an open-source vector database used for semantic search and Retrieval-Augmented Generation applications.",
+    new_metadata={
+        "topic": "ChromaDB",
+        "difficulty": "beginner"
+    }
+)
+
+kb.remove("agent_intro")
+
+results = kb.search("What is ChromaDB?")
+
+for r in results:
+    print(r)

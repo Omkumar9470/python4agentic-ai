@@ -1,4 +1,4 @@
-SAMPLE_TEXT = """
+'''SAMPLE_TEXT = """
 Artificial intelligence is transforming every industry.
 Machine learning, a subset of AI, enables systems to learn
 from data without being explicitly programmed.
@@ -19,8 +19,8 @@ Vector databases store embeddings and enable fast
 similarity search. ChromaDB, Pinecone, and Weaviate
 are popular vector database solutions.
 """
-
-
+'''
+'''
 
 # Fixed Size Chunking
 
@@ -40,7 +40,7 @@ def fixed_size_chunks(text: str, chunk_size: int = 200, overlap: int = 20) -> li
 
     return chunks
 
-'''
+
 chunks = fixed_size_chunks(SAMPLE_TEXT, chunk_size=400, overlap=50)
 
 for i, chunk in enumerate(chunks):
@@ -50,7 +50,7 @@ for i, chunk in enumerate(chunks):
 
 '''
 
-
+'''
 
 # Sentence Based Chunking
 
@@ -72,7 +72,7 @@ def sentence_chunks(text: str, sentences_per_chunk: int = 3, overlap: int = 1) -
     return chunks
 
 
-'''
+
 chunks = sentence_chunks(SAMPLE_TEXT, sentences_per_chunk=4, overlap=2)
 
 for i, chunk in enumerate(chunks):
@@ -84,7 +84,7 @@ for i, chunk in enumerate(chunks):
 
 
 
-
+'''
 # Paragraph based chunking
 new_para = """ 
 
@@ -109,7 +109,8 @@ From that day on, Maya understood that success is much like planting a seed.
 With faith, hard work, and patience, even the smallest dream can blossom into something extraordinary.
 
 """
-
+'''
+'''
 def paragraph_chunks(text: str, min_length: int = 50) -> list[str]:
     
     paragraphs = text.split("\n\n")
@@ -122,7 +123,7 @@ def paragraph_chunks(text: str, min_length: int = 50) -> list[str]:
 
     return chunks
 
-'''
+
 chunks = paragraph_chunks(new_para, min_length=50)
 
 for i, chunk in enumerate(chunks):
@@ -130,7 +131,7 @@ for i, chunk in enumerate(chunks):
     print(chunk)
     print("─" * 40)
 '''
-
+'''
 
 # Recursive Chunking
 
@@ -181,7 +182,7 @@ def recursive_chunks(
         return [text[i:i+chunk_size].strip() for i in range(0, len(text), chunk_size - overlap)]
 
     return split_text(text, separators)
-
+'''
 '''
 chunks = recursive_chunks(SAMPLE_TEXT, chunk_size=300, overlap=30)
 
@@ -822,6 +823,7 @@ print(peek["documents"])
 
 '''
 
+'''
 # All together of chromaDb operations
 
 import chromadb
@@ -914,6 +916,205 @@ kb.add([
         "text": "ChromaDB is a local vector database for storing "
                 "and searching embeddings in RAG systems.",
         "metadata": {"topic": "ChromaDB", "difficulty": "beginner"}
+    },
+    {
+        "id":   "agent_intro",
+        "text": "AI agents use tools in a loop to complete tasks "
+                "autonomously without human intervention.",
+        "metadata": {"topic": "Agents", "difficulty": "intermediate"}
+    },
+])
+
+
+results = kb.search("how does RAG reduce hallucination?", n=2)
+
+for r in results:
+    print(f"Score:    {r['score']}  (higher = more similar)")
+    print(f"Topic:    {r['metadata']['topic']}")
+    print(f"Text:     {r['text']}")
+    print("─" * 40)
+
+kb.add([
+    {
+        "id": "python_intro",
+        "text": "Python is the most popular language for AI Engineering.",
+        "metadata": {
+            "topic": "Python",
+            "difficulty": "beginner"
+        }
+    }
+])
+
+kb.update(
+    id="chroma_intro",
+    new_text="ChromaDB is an open-source vector database used for semantic search and Retrieval-Augmented Generation applications.",
+    new_metadata={
+        "topic": "ChromaDB",
+        "difficulty": "beginner"
+    }
+)
+
+kb.remove("agent_intro")
+
+results = kb.search("What is ChromaDB?")
+
+for r in results:
+    print(r)
+'''
+# Final Assesment Module 20
+import chromdb
+from google import genai
+
+client_ai = genai.Client()
+client_db = chromadb.PersistentClient(path="./chroma_db")
+
+def embed(text: str) -> list[float]:
+    response = client_ai.models.embed_content(
+        model    = "models/gemini-embedding-001",
+        contents = text
+    )
+    return response.embeddings[0].values
+
+
+class KnowledgeBase:
+
+    def __init__(self, name: str):
+        self.collection = client_db.get_or_create_collection(name)
+        print(f"KB '{name}' ready. Chunks: {self.collection.count()}")
+
+    def add(self, chunks: list[dict]):
+        
+        self.collection.add(
+            ids        = [c["id"]          for c in chunks],
+            documents  = [c["text"]        for c in chunks],
+            embeddings = [embed(c["text"]) for c in chunks],
+            metadatas  = [c["metadata"]    for c in chunks],
+        )
+        print(f"Added {len(chunks)} chunks. Total: {self.collection.count()}")
+
+    def search(self, query: str, n: int = 3, filters: dict = None) -> list[dict]:
+        kwargs = {
+            "query_embeddings": [embed(query)],
+            "n_results":        n,
+            "include":          ["documents", "metadatas", "distances"]
+        }
+        if filters:
+            kwargs["where"] = filters
+
+        results = self.collection.query(**kwargs)
+
+        return [
+            {
+                "text":     results["documents"][0][i],
+                "metadata": results["metadatas"][0][i],
+                "score":    round(1 - results["distances"][0][i], 4),
+            }
+            for i in range(len(results["ids"][0]))
+        ]
+
+    def count(self) -> int:
+        return self.collection.count()
+
+    def remove(self, id: str):
+        try:
+            self.collection.delete(ids=[id])
+            print(f"Chunk '{id}' deleted successfully.")
+
+        except Exception as e:
+            print(f"Error deleting chunk: {e}")
+    
+    def update(self, id: str, new_text: str, new_metadata: dict):
+        try:
+            self.collection.update(
+                ids        = [id],
+                documents  = [new_text],
+                embeddings=[embed(new_text)],
+                metadatas  = [new_metadata]
+                            )
+            print(f"New Chunk Added {id}")
+        
+        except Exception as e:
+            print(f"Error adding chunkl : {e}")
+
+
+
+kb = KnowledgeBase("Phase_2")
+
+kb.add([
+    {
+        "id":   "Module 11",
+        "text": """ LLM stands for Large Language Model, A neural network
+        trained on massive amounts of text.
+        That learns to pridict the next token given previous tokens.
+        
+        
+        LLMs are built on the transformer architecture.
+        -> Attention mechanism
+        -> Every word looks at every other word simulaneously.
+        -> Parallel processing = Fast
+        -> Long range context = no forgetting
+        
+        
+        How Trainig works ?
+        step 1: collect data
+        step 2: Tokenize
+        step 3: Train
+        step 4: RLHF (Reinforcement learning from Human feedback)
+        
+        
+        What happens when API is called ?
+        
+        promt -> Tokenizer -> Embedding layer -> Transformer layers -> output layer -> sampling -> Next token -> Full Response
+        
+        
+        -> Tokens are not words, not characters. is a sub word units
+        e.g. "unhappiness" -> [un , happiness] (2 tokens)
+        
+        -> Context window is a models's working memory,
+        everything it can see at once.
+        
+        -> Embeddings is a method where text converted into vectors.
+        
+        -> Temperature controls randomness of output,
+        it always pick highers probability token.
+        
+        -> Hallucinations is the model confidently states false information.
+        """,
+        "metadata": {"topic": "LLM", "difficulty": "beginner"}
+    },
+    {
+        "id":   "Module 12",
+        "text": """ Tokenuization is the process of converting raw text into
+        numbers the model can process.
+        
+        Context Window is maximum tokens the model can see in one API call.
+        
+        Embeddings is the process where text converted into vectors that 
+        capture meaning.
+        
+        
+        Working of the Tokenization.
+        It works on the principal of Byte Pair Encoding.
+        Rules:
+        -> spaces, caps, `punctuation = affect token count,
+        -> Non-English text = More tokens,
+        -> Numbers & code = often expensive in tokens
+        
+        
+        setup:
+        'pip install tiktoken openai numpy'
+        
+        tokentization(code):
+        import tiktoken
+        enc= tiketoken.encoding_for_model("gpt")
+        text = "Hello, My name is Om"
+        
+        tokens = enc.encode(text)
+        
+        print("Token IDs:", tokens)
+        print("Token count:", len(tokens))
+        print("Decoded: ", enc.decode(tokens)) """,
+        "metadata": {"topic": "Tokenization", "difficulty": "intermidiate"}
     },
     {
         "id":   "agent_intro",

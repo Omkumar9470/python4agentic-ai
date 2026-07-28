@@ -747,7 +747,7 @@ results = collection.query(
     where            = {"difficulty": "beginner"},  
     include          = ["documents", "metadatas", "distances"]
 )
-
+'''
 print(results["documents"])
 
 for i in range(len(results["ids"][0])):
@@ -757,7 +757,7 @@ for i in range(len(results["ids"][0])):
     print(f"Distance: {results['distances'][0][i]}")
     print(f"Text: {results['documents'][0][i]}")
     print("-" * 50)
-
+'''
 
 resultss = collection.query(
     query_embeddings = [embed("AI tools and frameworks")],
@@ -770,3 +770,30 @@ resultss = collection.query(
     },
     include = ["documents", "metadatas", "distances"]
 )
+
+
+# Updating And Deleting Chunk
+
+collection.update(
+    ids        = ["chunk_0"],
+    documents  = ["RAG (Retrieval Augmented Generation) is a "
+                  "technique that combines LLMs with vector "
+                  "databases to ground responses in real data."],
+    embeddings = [embed("RAG is a technique that combines LLMs "
+                        "with vector databases...")],
+    metadatas  = [{"source": "ai_overview.txt", "topic": "RAG",
+                   "difficulty": "intermediate", "updated": True}]
+)
+
+
+collection.delete(ids=["chunk_3"])
+
+
+print("Chunks remaining:", collection.count())
+
+
+result = collection.get(
+    ids     = ["chunk_0"],
+    include = ["documents", "metadatas"]
+)
+print(result)

@@ -1113,13 +1113,64 @@ kb.add([
         
         print("Token IDs:", tokens)
         print("Token count:", len(tokens))
-        print("Decoded: ", enc.decode(tokens)) """,
+        print("Decoded: ", enc.decode(tokens)) 
+        """,
         "metadata": {"topic": "Tokenization", "difficulty": "intermidiate"}
     },
     {
-        "id":   "agent_intro",
-        "text": "AI agents use tools in a loop to complete tasks "
-                "autonomously without human intervention.",
+        "id":   "Prompt Engineering",
+        "text": """ 
+        The skill of desiginig inputs to an LLM to get reliable,
+        accurate and useful outputs.
+
+        Why it exists :-
+        the models's output quality is directly controlled by the quality of
+        your input.
+
+        Message Structure :-
+        LLM Api call has 3 roles-
+        1 -> System: sets behaviour, Persona, rules
+        2 -> User: The human input
+        3 -> Assistant -> The model's response (in History)
+
+        Types of Prompting :-
+
+        1 -> Zero shot prompting
+            Give the model a task with no examples.
+            When to use:
+                Simple, well known tasks
+                Model already understands the domain
+                Fast iteration
+
+        2 -> Few shot prompting
+            Give the model examples before the task.
+            Show it the pattern you want.
+            When to use:
+                Custom output formats
+                Tasks the model get wrong with zero Shot
+                consitent structured outputs
+
+        3 -> ChainOfThoughts (COT)
+            Force the model to think step by step before giving the final response.
+
+        3 -> ReAct Prompting
+            React = Reasoning + Acting
+            The model:
+                Thinks about what to do (reasoning)
+                Decides an action
+                observes the result
+                Repeat until done
+
+            format:
+                Thought - [What model is thinking]
+                Action - [What tool/step to take]
+                Observation - [Result of the action]
+                ...repeat...
+                Final answer - [conclusion]
+        
+        4 -> System Prompt Engineering
+        
+        """,
         "metadata": {"topic": "Agents", "difficulty": "intermediate"}
     },
 ])

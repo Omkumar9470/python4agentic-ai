@@ -962,7 +962,7 @@ for r in results:
     print(r)
 '''
 # Final Assesment Module 20
-import chromdb
+import chromadb
 from google import genai
 
 client_ai = genai.Client()
@@ -1118,7 +1118,7 @@ kb.add([
         "metadata": {"topic": "Tokenization", "difficulty": "intermidiate"}
     },
     {
-        "id":   "Prompt Engineering",
+        "id":   "Module 13",
         "text": """ 
         The skill of desiginig inputs to an LLM to get reliable,
         accurate and useful outputs.
@@ -1169,14 +1169,75 @@ kb.add([
                 Final answer - [conclusion]
         
         4 -> System Prompt Engineering
-        
+            A system prompt is your product.
+            A well engineered system prompt has:
+                1. Persona: Who the model is
+                2. Goal: what it must do
+                3. Constraints: what it must not do
+                4. Format: How output should look
+                5. Tone: How it should sound
+                6. Edge cases: What to do when unsure
         """,
-        "metadata": {"topic": "Agents", "difficulty": "intermediate"}
+        "metadata": {"topic": "Prompt Engineering", "difficulty": "beginner"}
     },
+    {
+        "id":   "Module 14",
+        "text": """ 
+        Structure output:
+            Forcing the LLm to respond in a spesific, predictable, machine
+            readable format.
+            Instead of:
+                "The user seems to be feeling sad and stressed"
+            you get:
+                {
+                "emotion" : "sad",
+                "confidence" : 0.91,
+                "reqwuires_followup" : true
+                }
+
+            why it exists :
+                LLM outputs are text by difault. Text is unpredictable.
+                Machines need structure.
+
+            Probles without structured output:
+                you ask for json
+                    "Here is the json"
+                You parse it
+                    Your code crashes
+                Output format changes randomly between calls
+                Production system break
+
+            Solution ;
+                Forece the model to output ONLY valid structure
+                Your code can reliably parse it every time
+                Build real applications on top of LLM outputs
+
+            Where To use:
+                Resume Paper :- extract.name, skills, experience
+                Sentiment API :- {emotion, score, category}
+                code Reviewer :- {score, reasons, next_action}
+                RAG System ;- {answer, source[], confidence}
+
+        Types Of the Structured Output ->
+            Simplest approach. Tell the model to respond in JSON.
+            NO special API features needed. works with any model.
+
+            code:
+                from google import genai
+                client = genai.Client()
+
+                prompt = 'sample prompt with format : {
+                "name" : "string",
+                "age" : number,
+                "skills" : ["string"]
+                }
+        """,
+        "metadata": {"topic": "Structured Output", "difficulty": "advanced"}
+    }
 ])
 
-'''
-results = kb.search("how does RAG reduce hallucination?", n=2)
+
+results = kb.search("How do I make an LLM use external tools?", n=2)
 
 for r in results:
     print(f"Score:    {r['score']}  (higher = more similar)")
@@ -1210,3 +1271,4 @@ results = kb.search("What is ChromaDB?")
 
 for r in results:
     print(r)
+'''

@@ -7,6 +7,12 @@ from tools        import TOOLS, execute_tool
 
 import time
 
+try:
+    import streamlit as st
+    _HAS_STREAMLIT = True
+except ImportError:
+    _HAS_STREAMLIT = False
+
 client = genai.Client(api_key=GEMINI_API_KEY)
 
 
@@ -108,3 +114,76 @@ def get_response(memory: ConversationMemory) -> str:
             msg = f"Sorry, I'm having trouble connecting. ({e2})"
             print(msg)
             return msg
+
+def get_response_stream(memory: ConversationMemory):
+    recent = memory.get_recent()
+
+    if _HAS_STREAMLIT:
+        st.session_state.last_tool_call = None
+
+    try:
+        response = client.models.generate_content(
+            model=MODEL,
+            contents=recent,
+            config=types.GenerateContentConfig(
+                system_instruction=SYSTEM_PROMPT,
+                tools=[TOOLS]
+            )
+        )
+
+        part = response.candidates[0].content.parts[0]
+
+        if part.function_call:
+            fn_name = part.function_call.name
+            fn_args = dict(part.function_call.args)
+
+            if _HAS_STREAMLIT:
+                st.session_state.last_tool_call = f"{fn_name}({fn_args})"
+
+            result = execute_tool(fn_name, fn_args)
+
+            messages_with_tool = [
+                *recent,
+                response.candidates[0].content,
+                types.Content(
+                    role="user",
+                    parts=[types.Part(
+                        function_response=types.FunctionResponse(
+                            name=fn_name, response=result
+                        )
+                    )]
+                )
+            ]
+
+            for chunk in client.models.generate_content_stream(
+                model=MODEL,
+                contents=messages_with_tool,
+                config=types.GenerateContentConfig(
+                    system_instruction=SYSTEM_PROMPT, tools=[TOOLS]
+                )
+            ):
+                if chunk.text:
+                    yield chunk.text
+        else:
+            for chunk in client.models.generate_content_stream(
+                model=MODEL,
+                contents=recent,
+                config=types.GenerateContentConfig(
+                    system_instruction=SYSTEM_PROMPT, tools=[TOOLS]
+                )
+            ):
+                if chunk.text:
+                    yield chunk.text
+
+    except Exception as e:
+        yield f"\n\n*(Error: {e} — retrying in 5s...)*\n\n"
+        time.sleep(5)
+        try:
+            for chunk in client.models.generate_content_stream(
+                model=MODEL, contents=recent,
+                config=types.GenerateContentConfig(system_instruction=SYSTEM_PROMPT)
+            ):
+                if chunk.text:
+                    yield chunk.text
+        except Exception as e2:
+            yield f"Sorry, I'm having trouble connecting. ({e2})"

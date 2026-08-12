@@ -3,8 +3,23 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+try:
+    import streamlit as st
+    _HAS_STREAMLIT = True
+except ImportError:
+    _HAS_STREAMLIT = False
 
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
+
+def _get_secret(key: str, default: str = "") -> str:
+    if _HAS_STREAMLIT:
+        try:
+            if key in st.secrets:
+                return st.secrets[key]
+        except Exception:
+            pass
+    return os.getenv(key, default)
+
+GEMINI_API_KEY = _get_secret("GEMINI_API_KEY", "")
 MODEL           = "gemini-2.5-flash"
 
 
